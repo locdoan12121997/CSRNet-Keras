@@ -109,3 +109,6 @@ weights/
 models/
 data/
 weights_B_MSE_bestMAE8.31_Sun-May-19/
+*.png
+*.jpg
+*.jpeg
