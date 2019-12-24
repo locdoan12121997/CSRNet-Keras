@@ -55,7 +55,6 @@ while(cap.isOpened()):
 
         cv2.imshow('frame1', normalized_frame)
 
-        # # write the flipped frame
         out.write(np.uint8(visualized_frame))
         acccumulate_out.write(np.uint8(normalized_frame))
         cv2.imshow('frame',visualized_frame)

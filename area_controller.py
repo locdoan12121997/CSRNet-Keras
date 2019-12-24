@@ -31,6 +31,18 @@ class AreaController:
         return cv2.resize(self.total_working_area_numpy, (self.heat_map_size[1], self.heat_map_size[0]))
 
     def draw_people_count(self):
+        palette = plt.get_cmap('Set1')
+        num = 0
+        fig, ax = plt.subplots()
+        for i in range(len(self.number_of_people_vector)):
+            num += 1
+            ax.plot(self.number_of_people_vector[i], color=palette(num), linewidth=1, alpha=0.9, label=i)
+        plt.legend(loc=2)
+        plt.title("People count in areas", loc='left', fontsize=12, fontweight=0, color='orange')
+        plt.xlabel("Frame")
+        plt.ylabel("People")
+        plt.savefig('output/output.png')
+
         for i in range(len(self.number_of_people_vector)):
             fig, ax = plt.subplots()
             ax.plot(self.number_of_people_vector[i])
