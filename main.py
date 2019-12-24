@@ -1,3 +1,4 @@
+import argparse
 import os
 
 import cv2
@@ -8,28 +9,32 @@ from area_controller import AreaController
 from utils_imgproc import norm_by_imagenet
 from matplotlib import pyplot as plt
 
-desired_size_resize = (858, 480)
-desired_size = (480, 858)
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--input", default='video.mp4', type=str,
+                help="path to optional input video file")
+args = vars(ap.parse_args())
+
+desired_height = 480
+desired_width = 858
 working_areas = [((145, 0), (480, 200)), ((36, 317), (160, 430))]
-heat_maps = list()
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 model = CSRNet(input_shape=(None, None, 3))
 model.load_weights('./weights/model.hdf5')
 
-cap = cv2.VideoCapture('MOT16-04.mp4')
+cap = cv2.VideoCapture(args["input"])
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter('output.mp4',fourcc, 30.0, desired_size_resize)
-acccumulate_out = cv2.VideoWriter('accumulate_output.mp4',fourcc, 30.0, desired_size_resize)
+out = cv2.VideoWriter('output.mp4',fourcc, 30.0, (desired_width, desired_height))
+acccumulate_out = cv2.VideoWriter('accumulate_output.mp4',fourcc, 30.0, (desired_width, desired_height))
 frame2 = 0
-area_controller = AreaController(working_areas, desired_size)
+area_controller = AreaController(working_areas, (desired_height, desired_width))
 while(cap.isOpened()):
     ret, frame = cap.read()
     if ret:
-        original_frame = cv2.resize(frame, desired_size_resize)
+        original_frame = cv2.resize(frame, (desired_width, desired_height))
         frame = norm_by_imagenet(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB).astype(np.float32))
         heat_map = model.predict(np.expand_dims(frame, 0))[0,:,:,0]
         number_of_people = np.sum(heat_map)
@@ -40,7 +45,7 @@ while(cap.isOpened()):
         heat_map = heat_map / np.amax(heat_map) * 255
         heat_map = heat_map.astype(np.uint8)
         frame = cv2.applyColorMap(heat_map, cv2.COLORMAP_JET)
-        frame = cv2.resize(frame, desired_size_resize)
+        frame = cv2.resize(frame, (desired_width, desired_height))
         info = "People: " + str(round(number_of_people))
 
         frame2 += frame

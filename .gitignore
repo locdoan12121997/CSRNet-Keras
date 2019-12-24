@@ -102,7 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-*.mp4
+# *.mp4
 test_images/
 materials/
 weights/
@@ -112,3 +112,4 @@ weights_B_MSE_bestMAE8.31_Sun-May-19/
 *.png
 *.jpg
 *.jpeg
+
