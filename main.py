@@ -10,8 +10,12 @@ from utils_imgproc import norm_by_imagenet
 from matplotlib import pyplot as plt
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--input", default='video.mp4', type=str,
+ap.add_argument("-i", "--input", default='example/MOT16-04.mp4', type=str,
                 help="path to optional input video file")
+ap.add_argument("-d", "--heatmap_path", default='output/heatmap.mp4', type=str,
+                help="path to optional heatmap output video file")
+ap.add_argument("-a", "--accumulate_path", default='output/accumulate.mp4', type=str,
+                help="path to optional accumulate output video file")
 args = vars(ap.parse_args())
 
 desired_height = 480
@@ -22,15 +26,14 @@ model = CSRNet(input_shape=(None, None, 3))
 model.load_weights('./weights/model.hdf5')
 
 cap = cv2.VideoCapture(args["input"])
-frame_width = int(cap.get(3))
-frame_height = int(cap.get(4))
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter('output.mp4',fourcc, 30.0, (desired_width, desired_height))
-acccumulate_out = cv2.VideoWriter('accumulate_output.mp4',fourcc, 30.0, (desired_width, desired_height))
+out = cv2.VideoWriter(args["heatmap_path"], fourcc, 30.0, (desired_width, desired_height))
+acccumulate_out = cv2.VideoWriter(args["accumulate_path"], fourcc, 30.0, (desired_width, desired_height))
 frame2 = 0
 area_controller = AreaController(working_areas, (desired_height, desired_width))
+
 while(cap.isOpened()):
     ret, frame = cap.read()
     if ret:
@@ -73,7 +76,7 @@ fig, ax = plt.subplots()
 plt.axis('off')
 im = ax.imshow(cv2.cvtColor(np.uint8(normalized_frame), cv2.COLOR_BGR2RGB), cmap='jet')
 fig.colorbar(im, orientation='horizontal')
-plt.savefig('output.png')
+plt.savefig('output/heatmap_output.png')
 
 area_controller.draw_people_count()
 # Release everything if job is finished

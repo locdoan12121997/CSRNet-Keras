@@ -41,7 +41,7 @@ class AreaController:
         plt.title("People count in areas", loc='left', fontsize=12, fontweight=0, color='orange')
         plt.xlabel("Frame")
         plt.ylabel("People")
-        plt.savefig('output/output.png')
+        plt.savefig('output/people_output.png')
 
         for i in range(len(self.number_of_people_vector)):
             fig, ax = plt.subplots()
